@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>夸夸涵涵的小天地</title>
+  <style>
+    /* 页面整体布局与背景，加上边框 */
+    body {
+      margin: 10px;
+      padding: 10px;
+      border: 8px dashed #ffa6c9; /* 可爱的粉色边框 */
+      background: #ffe7ea; /* 柔和的粉色背景 */
+      font-family: "微软雅黑", sans-serif;
+      font-size: 18px; /* 整体文字变大，适合手机阅读 */
+      box-sizing: border-box; /* 让内边距不影响整体宽高 */
+      /* 移除 overflow: hidden，以便手机上可以滚动查看 */
+    }
+
+    /* 标题样式 */
+    h1 {
+      text-align: center;
+      padding: 20px 0 10px;
+      margin: 0;
+      font-size: 32px; /* 标题更大 */
+      color: #ff6699;
+      font-weight: bold;
+    }
+
+    /* 小提示文字样式 */
+    .tip {
+      text-align: center;
+      font-size: 18px;
+      color: #ff99aa;
+      margin-bottom: 10px;
+    }
+
+    /* 容器：去掉固定高度，让页面可自适应 */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+      /* min-height: 70vh; // 如果想保留最小高度可以启用 */
+    }
+
+    /* 进度条容器 */
+    .progress-container {
+      position: relative;
+      width: 80%; /* 更宽一些，适合手机 */
+      max-width: 500px; /* 可设置最大宽度，防止大屏太宽 */
+      height: 40px; /* 进度条稍微调高 */
+      background: #ffe3e8;
+      border-radius: 20px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    /* 进度条本体 */
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #ffbed2; /* 粉色 */
+      border-radius: 20px;
+      transition: width 0.3s ease;
+    }
+
+    /* 椰子图标 */
+    .coconut {
+      font-size: 80px; /* 调大字体，便于手机端点击 */
+      cursor: pointer;
+      transition: transform 0.2s;
+      user-select: none; /* 禁止选中文本 */
+      margin-bottom: 40px; /* 增加间距 */
+    }
+    .coconut:hover {
+      transform: scale(1.2) rotate(-10deg);
+    }
+
+    /* 弹出对话框的样式 */
+    .popup {
+      position: absolute;
+      padding: 10px 15px;
+      background: #fff5f7; 
+      border: 2px dashed #ffa6c9;
+      border-radius: 10px;
+      color: #ff66a0;
+      font-size: 16px;
+      z-index: 999;
+      animation: fadein 0.5s forwards; /* 简单的淡入动画 */
+      max-width: 180px; /* 避免对话框文字过长 */
+      line-height: 1.5;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>(´•ω•`)ﾉﾞ 对 涵涵 的 夸夸鼓励 (´•ω•`)ﾉﾞ</h1>
+  <div class="tip">点击下面的椰子(🥥)收集赞美能量，进度条满了会有惊喜哦！</div>
+
+  <div class="container">
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="coconut" id="coconut">🥥</div>
+  </div>
+
+  <script>
+    // 每次点击增加的进度
+    const INCREMENT = 20; // 可根据需要调整单次点击增长的百分比
+    let currentProgress = 0;
+
+    // 预设的夸夸内容数组
+    const compliments = [
+      "你是世界上最棒的扣扣！ (★ω★)",
+      "只要还能喘气问题都能被解决！ (ง •_•)ง",
+      "我会一直支持你当你的后援哒 (๑•ㅂ•)و",
+      "坚持会带来好结果，但改变也很酷 o(*≧▽≦)ツ",
+      "涵涵，不管在哪里，做自己喜欢的事吧 ✧(≖ ◡ ≖✿)",
+      "你是个超级可爱有趣善良的人 (*´∀`)~♥",
+      "加持幸运能量！ (っ´ω`c)",
+      "一起等待雨后的漂亮彩虹吧 (´▽`ʃ♡ƪ)",
+      "相信自己！ (❁´◡`❁)",
+      "已经非常非常厉害了！ฅ(⌯͒• ɪ •⌯͒)ฅ"
+    ];
+
+    // 进度条元素
+    const progressBar = document.getElementById("progressBar");
+    // 椰子元素
+    const coconut = document.getElementById("coconut");
+
+    // 点击事件
+    coconut.addEventListener("click", () => {
+      // 累加进度
+      currentProgress += INCREMENT;
+      if (currentProgress > 100) currentProgress = 100;
+
+      // 更新进度条宽度
+      progressBar.style.width = currentProgress + "%";
+
+      // 若进度条满了，触发弹出夸夸窗口
+      if (currentProgress >= 100) {
+        showCompliments();
+        // 重置进度条，可以让她继续点击收集下一轮
+        setTimeout(() => {
+          currentProgress = 0;
+          progressBar.style.width = "0%";
+        }, 600);
+      }
+    });
+
+    // 随机弹出一些夸夸对话框
+    function showCompliments() {
+      // 假设每次进度条满后弹出 4~6 个随机夸夸
+      const randomCount = Math.floor(Math.random() * 3) + 4; 
+      for (let i = 0; i < randomCount; i++) {
+        spawnCompliment();
+      }
+    }
+
+    // 在页面随机位置生成一个带文本的对话框
+    function spawnCompliment() {
+      const complimentText = compliments[Math.floor(Math.random() * compliments.length)];
+      const popup = document.createElement("div");
+      popup.className = "popup";
+      popup.innerText = complimentText;
+
+      // 随机位置（尽量不超出窗口范围）
+      const x = Math.random() * (window.innerWidth - 200);
+      const y = Math.random() * (window.innerHeight - 120);
+
+      popup.style.left = x + "px";
+      popup.style.top = y + "px";
+
+      document.body.appendChild(popup);
+
+      // 设置 2.5s 后自动消失
+      setTimeout(() => {
+        if (popup && popup.parentNode) {
+          popup.parentNode.removeChild(popup);
+        }
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
